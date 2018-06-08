@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+        <title>Blank App</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+        <script src="https://www.gstatic.com/firebasejs/5.0.2/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.0.2/firebase-firestore.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.0.2/firebase-auth.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCf6Z6xydtlrOQZUuPv5hq-y9PjQ7lEcdI"></script>
+
+        <style>
+            #footer
+            {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+            }
+             .center 
+            {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                width: 50%;
+            }
+            #container
+        	{
+        		margin: 6px;
+        	}
+        	
+        	#map-canvas
+        	{
+        		height: 400px;
+        		width: 100%
+        	}
+        	.list-item
+        	{
+        		background: #fff;
+        		padding: 20px;
+        		margin: 0px;
+        		border-radius: 5px;
+        		box-shadow: 0 0 10px #ccc;
+        		margin-bottom: 5px;
+        	}
+        	.list-item h5
+        	{
+        		padding: 0px;
+        		margin: 0px;
+        		font-size: 20px;
+        	}
+        	.list-item p
+        	{
+        		padding: 0px;
+        		margin: 0px;
+        		margin-top: 3px;
+        		font-size: 14px;
+        		color: #555;
+        	}
+        </style>
+    </head>
+    <body>
+        <div data-role="page" id="login_page">
+            <div data-role="header">
+                <h1>LogIn</h1>
+            </div> <!-- header -->
+            <div id="login_div" data-role="main" class="ui-content" style="background-color:#00A877;">
+    			<img src="img/jomPeduli.jpg" alt="jomPeduli logo" style="width:100px;height:100px;" class="center">
+    			<br>
+    			<label for="username" style="color:white;">E-mail: </label>
+    			<input id="email_field" type="email"/>
+    			<label for="pwd" style="color:white;">Password: </label>
+    			<input id="password_field" type="password"/>
+    			<br><br>
+    			
+    			<button onclick="login()">Log In</button>
+    			<button onclick="location.href='index.html#register_page'">Sign Up</button>
+    			<br><br><br>
+    		</div> <!--main-->
+    		<div data-role="footer" id="footer">
+    				<h2>jomPeduli</h2>
+    		</div> <!--footer-->
+        </div> <!-- page -->
+        
+        <div data-role="page" id="register_page">
+            <div data-role="header">
+                <h1>Register</h1>
+            </div> <!-- header -->
+            <div data-role="main" class="ui-content" style="background-color:#00A877;">
+                <img src="img/jomPeduli.jpg" alt="jomPeduli logo" style="width:70px;height:70px;" class="center">
+                <br>
+                <label for="username" style="color:white;">E-mail: </label>
+                <input id="username" type="email"/>
+                <label for="password" style="color:white;" onkeyup="checkLength(this)">Password: </label>
+                <input id="password" type="password"/>
+                <label for="phoneNumber" style="color:white;">Phone Number: </label>
+                <input id="phoneNumber" type="tel"/>
+                <br>
+                <button id="btnSignup" type="submit" onclick="validate()">Register</button>
+                <button onclick="location.href='index.html#login_page'">Log In</button>
+                <ul id="members" data-role="listview"></ul>
+                <br><br><br>
+            </div> <!--main-->
+            <div data-role="footer" id="footer">
+                    <h2>jomPeduli</h2>
+            </div> <!--footer-->
+        </div> <!-- page -->
+
+        <div data-role="page" id="menu_page">
+            <div data-role="header">
+                <h1>Menu</h1>
+            </div> <!-- header -->
+            <div data-role="main" class="ui-content" style="background-color:#00A877;">
+    			<img src="img/create-rep.jpg" style="width:270px;height:100px;" alt="create report" onclick="location.href='index.html#create_page'"></img> <br><br> &nbsp;
+                <img src="img/view-rep.jpg" style="width:120px;height:120px;" alt="view report" onclick="location.href='index.html#view_page'"></img>
+                &nbsp;&nbsp;
+                <img src="img/view-rew.jpg" style="width:120px;height:120px;" alt="view reward" onclick="location.href='index.html#reward_page'"></img>
+                <br><br> &nbsp;
+                <img src="img/edit-prof.jpg" style="width:120px;height:120px;" alt="edit profile" onclick="location.href='index.html#profile_page'"></img>
+                &nbsp;&nbsp;
+                <img src="img/helpfaq.jpg" style="width:120px;height:120px;" alt="help" onclick="location.href='index.html#faq_page'"></img>
+                <br>
+                <button onclick="logout()" style="background-color: #f44336; color:white;">Log Out</button>
+                <br>
+    		</div> <!--main-->
+    		<div data-role="footer" id="footer">
+    				<h2>jomPeduli</h2>
+    		</div> <!--footer-->
+        </div> <!-- page -->
+
+        <div data-role="page" id="create_page">
+            <div data-role="header">
+                <h1>Create Report</h1>
+                <button onclick="location.href='index.html#menu_page'" style="width: 20%">Menu</button>
+            </div> <!-- header -->
+            <div data-role="main" class="ui-content" style="background-color:#00A877;">
+                <label for="category" style="color:white;" >Step 1: Choose Category</label>
+                <form action="/action_page.php"  style="width: 50%">
+                    <input type="text" id="category" list="catList">
+                    <datalist id="catList">
+                        <option value="Vandalism"></option>
+                        <option value="Misued Emergency Lane"></option>
+                        <option value="Road Bullying"></option>
+                        <option value="Bag Snatching"></option>
+                        <option value="Sexual Harrassment"></option>
+                    </datalist>
+                </form>
+                
+                <label for="location" style="color:white;">Step 2: Enter location</label>
+                <input id="location" type="text"/>
+                <button onclick="location.href='index.html#maps_page'" style="width: 50%">View maps</button>
+
+                <label for="location" style="color:white;">Step 3: Send Picture</label>
+                <img id="imgArea" />
+                <button id="btnTakePicture"  style="width: 50%">Take Picture</button>
+                <button id="btnClear"  style="width: 50%">Delete</button>
+
+                <label for="details" style="color:white;">Step 4: Include extra infomartion</label>
+                <textarea id="details" rows="5" cols="50" form="usrform"></textarea>
+                
+                <br>
+                <button id="btnSubmit" type="submit" onclick="sendReport()">Submit</button>
+                <!--onclick="location.href='submitted.html'"-->
+                <br><br>
+            </div> <!--main-->
+            <div data-role="footer" id="footer">
+                    <h2>jomPeduli</h2>
+            </div> <!--footer-->
+        </div> <!-- page -->
+
+        <div data-role="page" id="profile_page">
+            <div data-role="header">
+                <h1>Edit Profile</h1>
+                <button onclick="location.href='index.html#menu_page'" style="width: 20%">Menu</button>
+            </div> <!-- header -->
+           <div data-role="main" class="ui-content" style="background-color:#00A877;">
+           		<p id="user" style="color:white;"></p>
+           		<p id="pwd" style="color:white;"></p>
+           		<p id="phone" style="color:white;"></p>
+           		<p id="address" style="color:white;"></p>
+                <br>
+                <label for="phone" style="color:white;">E-mail: </label>
+                <input id="phone_update" type="number"/>
+                <label for="address" style="color:white;">Address</label>
+                <textarea id="address" rows="10" cols="30"></textarea>
+    			<br><br><br><br>
+    			
+    			<button onclick="update()">Save</button>
+    			<br><br>
+    		</div> <!--main-->
+    		<div data-role="footer" id="footer">
+    				<h2>jomPeduli</h2>
+    		</div> <!--footer-->
+        </div> <!-- page -->
+
+        <div data-role="page" id="view_page">
+            <div data-role="header">
+                <h1>History</h1>
+                <button onclick="location.href='index.html#menu_page'" style="width: 20%">Menu</button>
+            </div> <!-- header -->
+           <div data-role="main" class="ui-content"  style="background-color:#00A877;">
+           		<div class="main-list" id="list_div">
+           			
+           		</div>
+           		<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    		</div> <!--main-->
+    		<div data-role="footer" id="footer">
+    				<h5>jomPeduli</h5>
+    		</div> <!--footer-->
+        </div> <!-- page -->
+
+        <div data-role="page" id="reward_page">
+            <div data-role="header">
+                <h1>Reward</h1>
+               	<button onclick="location.href='index.html#menu_page'" style="width: 20%">Menu</button>
+            </div> <!-- header -->
+           <div data-role="main" class="ui-content"  style="background-color:#00A877;">
+           		<p id="points" style="color:white;"></p>
+                <img src="img/point.png" alt="starbucks" style="width:100%;height:30%;" class="center">
+                <h5 style="color:white;">RM5 off any drink [200 points]<button style="width:30%;height:20%;font-size: 10px;"
+                    onclick="location.href='index.html#reward_details'">Redeem</button></h5>
+                <br><br><br><br><br><br><br><br><br>
+    		</div> <!--main-->
+
+    		<div data-role="footer" id="footer">
+    				<h5>jomPeduli</h5>
+    		</div> <!--footer-->
+        </div> <!-- page -->
+
+        <div data-role="page" id="reward_details">
+            <div data-role="header">
+                <h1>Reward</h1>
+                <button onclick="location.href='index.html#reward_page'" style="width: 20%;font-size: 12px;">Back</button>
+            </div> <!-- header -->
+           <div data-role="main" class="ui-content">
+                <img src="img/point2.png" alt="donuts" style="width:100%;height:30%;" class="center">
+                <br><br>
+            </div> <!--main-->
+
+            <div data-role="footer" id="footer">
+                    <h5>jomPeduli</h5>
+            </div> <!--footer-->
+        </div> <!-- page -->
+
+        <div data-role="page" id="faq_page">
+            <div data-role="header">
+                <h1>FAQ</h1>
+                <button onclick="location.href='index.html#menu_page'" style="width: 20%">Menu</button>
+            </div> <!-- header -->
+           <div data-role="main" class="ui-content" style="background-color:#00A877;">
+    			<div data-role="collapsible-set">
+    				<div data-role="collapsible" data-collapsed="false">
+    					<h3>Apa yang boleh saya adu?</h3>
+    					<p>Vandalisma, buli jalanan, salah guna laluan kecemasan, ragut dan gangguan seksual</p>
+    				</div> <!--collapsible1-->
+    				<div data-role="collapsible">
+    					<h3>Adakah sebarang bayaran? </h3>
+    					<p>Tiada. Setiap aduan yang dibuat adalah percuma.</p>
+    				</div> <!--collapsible2-->
+                    <div data-role="collapsible">
+                        <h3> Apa yang perlu saya masukkan? </h3>
+                        <p>Lokasi dan gambar.</p>
+                    </div> <!--collapsible3-->
+                    <div data-role="collapsible">
+                        <h3>Berapa lama siasatan? </h3>
+                        <p>Standard Operating Procedures (SOP) BPA, menetapkan bahawa setiap aduan yang dikemukakan mesti diselesaikan dalam tempoh 15 hari bekerja. </p>
+                    </div> <!--collapsible4-->
+                    <div data-role="collapsible">
+                        <h3>Apa berlaku kepada aduan? </h3>
+                        <p>jomPeduli akan mengeluarkan tiket aduan, kemudian agensi berkaitan akan menyiasat. Selepas pesalah disaman, pengadu boleh membuat tuntunan hadiah berupa wang melalui perbankan internet.</p>
+                    </div> <!--collapsible5-->
+    			</div> <!--collapsible set-->
+    			
+                <br><br><br><br><br><br><br>
+    		</div> <!--main-->
+    		<div data-role="footer" id="footer">
+    				<h2>jomPeduli</h2>
+    		</div> <!--footer-->
+        </div> <!-- page -->
+
+        <div data-role="page" id="maps_page">
+            <div data-role="header">
+                <h1>Maps</h1>
+                <button onclick="location.href='index.html#create_page'" style="width: 20%">Back</button>
+            </div> <!-- header -->
+           <div data-role="main" class="ui-content">
+    			<div id="container">
+    				<button id="btnLocation" onclick="getLocation()">Get Location</button>
+    				<button id="btnClear" onclick="clearScreen()">Clear</button>
+    				<div id="result"></div>
+    				<div id="map-canvas"></div>
+    			</div>
+                <br>
+    		</div> <!--main-->
+    		<div data-role="footer" id="footer">
+    				<h2>jomPeduli</h2>
+    		</div> <!--footer-->
+        </div> <!-- page -->
+        
+        <script>
+        	var config = 
+            {
+                apiKey: "AIzaSyCKW-lo8jwAicAT2-mNcdDVl6eICrVFBi0",
+                authDomain: "jompeduli-b312b.firebaseapp.com",
+                databaseURL: "https://jompeduli-b312b.firebaseio.com",
+                projectId: "jompeduli-b312b",
+                storageBucket: "jompeduli-b312b.appspot.com",
+                messagingSenderId: "789222211267"
+            };
+            firebase.initializeApp(config);
+        </script>
+        <script src="app.js"></script>
+    </body>
+</html>
